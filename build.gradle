@@ -1,0 +1,87 @@
+plugins {
+	// Plugin-ID 'fabric-loom' -- existiert als fabric-loom.gradle.plugin
+	// im Fabric-Maven (verifiziert). Mit Gradle 9.2.1 loest sie sauber auf.
+	id 'fabric-loom' version "${loom_version}"
+	id 'maven-publish'
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+	archivesName = project.archives_base_name
+}
+
+repositories {
+	// Modrinth Maven -- hier liegen Sodium, Lithium etc.
+	exclusiveContent {
+		forRepository {
+			maven {
+				name = "Modrinth"
+				url = "https://api.modrinth.com/maven"
+			}
+		}
+		filter {
+			includeGroup "maven.modrinth"
+		}
+	}
+}
+
+loom {
+	// Trennt Client- und Common-Code. Ein PvP-Client ist rein clientseitig.
+	splitEnvironmentSourceSets()
+
+	mods {
+		"pvpclient" {
+			sourceSet sourceSets.main
+			sourceSet sourceSets.client
+		}
+	}
+}
+
+dependencies {
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+
+	// Yarn-Mappings statt Mojang -- der gesamte Code nutzt Yarn-Namen
+	// (net.minecraft.client.MinecraftClient, Text, DrawContext, ...).
+	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+	// --- FPS / Performance ("der Boost wie bei Lunar/Ogulniega") ---
+	// Diese Mods MACHEN den FPS-Boost. Wir schreiben ihn nicht selbst.
+	// Sie laufen hier zur Laufzeit mit, damit du im Dev-Client schon
+	// die geboosteten Frames hast und Kompatibilitaet testen kannst.
+	// Spieler installieren sie spaeter einfach mit in ihren mods-Ordner.
+	// Verifizierte echte 1.21.11-Versionen (Modrinth, Maerz 2026).
+	// Format: maven.modrinth:<slug>:<modrinth-version-id>
+	modRuntimeOnly "maven.modrinth:sodium:mc1.21.11-0.8.7-fabric"
+	modRuntimeOnly "maven.modrinth:lithium:mc1.21.11-0.21.4-fabric"
+	// (FerriteCore, Entity Culling etc. koennen analog ergaenzt werden,
+	//  sobald du die exakten 1.21.11-Versions-Strings von Modrinth hast.)
+}
+
+processResources {
+	inputs.property "version", project.version
+
+	filesMatching("fabric.mod.json") {
+		expand "version": project.version
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.release = 21
+}
+
+java {
+	withSourcesJar()
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
+}
+
+jar {
+	from("LICENSE") {
+		rename { "${it}_${base.archivesName.get()}" }
+	}
+}
