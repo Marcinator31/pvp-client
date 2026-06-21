@@ -1,0 +1,14 @@
+{
+	"required": true,
+	"package": "com.example.pvpclient.mixin.client",
+	"compatibilityLevel": "JAVA_21",
+	"client": [
+		"MouseMixin",
+		"ParticleManagerMixin",
+		"GammaMixin",
+		"NoPumpkinBlurMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}
