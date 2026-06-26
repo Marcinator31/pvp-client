@@ -1,0 +1,29 @@
+{
+	"required": true,
+	"package": "com.example.pvpclient.mixin.client",
+	"compatibilityLevel": "JAVA_21",
+	"client": [
+		"BlockInteractionMixin",
+		"EntityRenderShouldRenderMixin",
+		"HudCameraPlayerMixin",
+		"MouseMixin",
+		"ParticleManagerMixin",
+		"GammaMixin",
+		"NoPumpkinBlurMixin",
+		"LowFireMixin",
+		"LowShieldMixin",
+		"MinecraftClientAccessor",
+		"MixinFogRenderer",
+		"HeldItemRendererMixin",
+		"LivingEntityRendererMixin",
+		"CameraMixin",
+		"KeyboardInputMixin",
+		"InputAccessor",
+		"EntityLookMixin",
+		"EntityEspMixin",
+		"FogDataAccessor"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}
