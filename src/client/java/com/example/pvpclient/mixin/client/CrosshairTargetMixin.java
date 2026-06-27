@@ -46,8 +46,19 @@ public abstract class CrosshairTargetMixin {
             // Reichweite des Spielers (Survival ~4.5). Block-Raycast vom echten
             // Spieler mit dessen aktueller (in der Freecam eingefrorener)
             // Blickrichtung.
+            //
+            // WICHTIG: festes tickDelta = 1.0F statt des frame-abhaengigen Werts.
+            // Der Spieler steht in der Freecam still (Position + Blick
+            // eingefroren), daher braucht es keine Interpolation. Mit einem
+            // konstanten tickDelta trifft der Raycast in JEDEM Frame exakt
+            // denselben Block -- sonst verschiebt der schwankende Wert die
+            // Trefferposition minimal, das Spiel denkt "anderer Block" und setzt
+            // den Abbau-Fortschritt zurueck (man muss den Block mehrfach
+            // anfangen).
             double reach = player.getBlockInteractionRange();
-            HitResult target = player.raycast(reach, tickDelta, false);
+            HitResult target = player.raycast(reach, 1.0F, false);
+            // IMMER setzen (auch bei MISS), damit nie das Kamera-Ziel der
+            // Freecam durchrutscht und den Block wechselt.
             if (target != null) {
                 ((MinecraftClientAccessor) client).setCrosshairTarget(target);
             }
