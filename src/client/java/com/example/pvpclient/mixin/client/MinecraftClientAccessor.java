@@ -36,4 +36,12 @@ public interface MinecraftClientAccessor {
      */
     @Accessor("worldRenderer")
     WorldRenderer getWorldRenderer();
+
+    /**
+     * Setter fuer das crosshairTarget-Feld. Wird genutzt, damit in der Freecam
+     * der Abbau/Angriff vom echten Spieler ausgeht statt von der Kamera: wir
+     * berechnen das Ziel selbst vom Spieler und setzen es hier.
+     */
+    @Accessor("field_1765")
+    void setCrosshairTarget(net.minecraft.util.hit.HitResult target);
 }
